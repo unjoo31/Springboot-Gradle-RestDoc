@@ -21,14 +21,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, length = 20)
+    @Column(unique = true, length = 20, nullable = false)
     private String username;
-    @Column(unique = true, length = 100)
+    @Column(length = 100, nullable = false)
     private String password;
-    @Column(unique = true, length = 100)
+    @Column(length = 100, nullable = false)
     private String email;
 
-    // 메서드를 만들때는 의미있는 이름으로 만들기
+    // 메서드를 만들때는 의미있는 이름으로 만들기 (의미있는 setter 만들기)
     public void updatePassword(String password){
         this.password = password;
     }
