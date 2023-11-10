@@ -47,13 +47,34 @@ public class UserControllerTest {
         resultActions
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("cos"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("1234"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("cos@nate.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.response.id").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.response.username").value("cos"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.response.password").value("1234"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.response.email").value("cos@nate.com"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
     }
 
     @Test
-    public void userInfo_test(){}
+    public void userInfo_test() throws Exception {
+        // given
+        int id = 1;
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/users/"+id)
+        );
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println(responseBody);
+
+        // then
+        resultActions
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.response.id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.response.username").value("ssar"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.response.password").value("1234"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.response.email").value("ssar@nate.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
+    }
 }

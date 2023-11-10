@@ -28,7 +28,16 @@ spring:
       hibernate:
         format_sql: true
       default_batch_fetch_size: 100
+
     open-in-view: false
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  level:
+    '[com.example.restdocapp]': DEBUG
+    '[org.hibernate.type]': TRACE
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
