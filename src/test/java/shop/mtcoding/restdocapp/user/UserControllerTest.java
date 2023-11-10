@@ -1,22 +1,26 @@
 package shop.mtcoding.restdocapp.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import shop.mtcoding.restdocapp.MyWithRestDoc;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@AutoConfigureMockMvc
+// 클래스 상단에 @AutoConfigureRestDocs(uriScheme = "http", uriHost = "localhost", uriPort = 8080) 어노테이션 추가
+@AutoConfigureRestDocs(uriScheme = "http", uriHost = "localhost", uriPort = 8080)
 @SpringBootTest // 통합 테스트시에 모든 클래스를 메모리에 띄우기
-public class UserControllerTest {
+public class UserControllerTest extends MyWithRestDoc{ // MyWithRestDoc 파일을 상속해서 사용
 
-    @Autowired
-        private MockMvc mvc;
     
     @Test
     public void join_test() throws Exception{
@@ -33,7 +37,8 @@ public class UserControllerTest {
         System.out.println("=========================");
 
         // when
-        ResultActions resultActions = mvc.perform(
+        // mockMvc와 document를 부모에게 물려받아서 사용
+        ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders
                         .post("/join")
                         .content(requestBody)
@@ -51,16 +56,20 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.response.username").value("cos"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.response.password").value("1234"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.response.email").value("cos@nate.com"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty())
+                // AbstractControllerTest 파일에서 adoc파일 생성 위치를 자동화함.
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document);
     }
 
     @Test
-    public void userInfo_test() throws Exception {
+    public void user_info_test() throws Exception {
         // given
         int id = 1;
 
         // when
-        ResultActions resultActions = mvc.perform(
+        // mockMvc와 document를 부모에게 물려받아서 사용
+        ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders
                         .get("/users/"+id)
         );
@@ -75,6 +84,9 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.response.username").value("ssar"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.response.password").value("1234"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.response.email").value("ssar@nate.com"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty())
+                // AbstractControllerTest 파일에서 adoc파일 생성 위치를 자동화함.
+                .andDo(MockMvcResultHandlers.print()) 
+                .andDo(document); 
     }
 }
