@@ -1,5 +1,7 @@
 package shop.mtcoding.restdocapp.user;
 
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -7,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +21,7 @@ import shop.mtcoding.restdocapp.util.ApiUtil;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserReporitory userReporitory;
+    private final UserReporitory userRepository;
 
     
     // 회원가입
@@ -32,20 +35,30 @@ public class UserController {
             return new ResponseEntity<>(ApiUtil.error(value+" : "+key), HttpStatus.BAD_REQUEST);
         }
 
-        User user = userReporitory.save(requestDTO.toEntity());
+        User user = userRepository.save(requestDTO.toEntity());
 
         return ResponseEntity.ok().body(ApiUtil.success(user));
+    }
+
+    // 유저조회
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> userInfo(@PathVariable Integer id){
+        
+        Optional<User> userOP = userRepository.findById(id);
+        
+        // 클린코드 방식
+        if(userOP.isEmpty()){
+            return new ResponseEntity<>(
+                    ApiUtil.error("해당 아이디가 존재하지 않습니다"), 
+                    HttpStatus.NOT_FOUND
+            );
+        }
+        return ResponseEntity.ok().body(ApiUtil.success(userOP.get()));
     }
 
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<?> login(){
-        return ResponseEntity.ok().body(null);
-    }
-
-    // 유저조회
-    @GetMapping("/users/{id}")
-    public ResponseEntity<?> userInfo(){
         return ResponseEntity.ok().body(null);
     }
 }
